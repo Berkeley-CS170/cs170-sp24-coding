@@ -23,6 +23,16 @@ def validate_tour(tour, matrix):
     return cost
 
 
+def verify_basic(matrix, path):
+    """Verify that the proposed solution is valid."""
+    assert len(path) == len(
+        matrix
+    ), f"There are {len(matrix)} cities but your path has {len(path)} cities!"
+    assert sorted(path) == list(
+        range(len(path))
+    ), f"Your path is not a permutation of cities (ints from 0 to {len(path)-1})"
+
+
 def evaluate_tsp(tsp_approximation):
     """
     Provided function to evaluate your TSP approximation function.
@@ -33,15 +43,9 @@ def evaluate_tsp(tsp_approximation):
     test_cases = pickle.load(open(os.path.join("tsp_cases.pkl"), "rb"))
 
     total_cost = 0
-    for i, case in enumerate(test_cases["files"]):
+    for i, case in enumerate(test_cases["files"] + test_cases["generated"]):
         tour = tsp_approximation(case)
-        cost = validate_tour(tour, case)
-        assert cost != -1
-        total_cost += cost
-        print(f"Case {i}: {cost}")
-
-    for i, case in enumerate(test_cases["generated"], start=len(test_cases["files"])):
-        tour = tsp_approximation(case)
+        verify_basic(case, tour)
         cost = validate_tour(tour, case)
         assert cost != -1
         total_cost += cost
